@@ -1,0 +1,11 @@
+node_modules/
+.cache/
+artifacts/
+cache/
+dist/
+typechain-types/
+.env
+.env.*
+coverage/
+coverage.json
+hardhat-network-accounts.json
