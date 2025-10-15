@@ -4,7 +4,6 @@ pragma solidity 0.8.21;
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 
-
 contract UniswapAlexarMessageReceiver is AxelarExecutable {
     using Address for address;
 
@@ -54,9 +53,7 @@ contract UniswapAlexarMessageReceiver is AxelarExecutable {
         bytes[] calldatas;
     }
 
-     constructor(
-        address gatewayAddress
-    ) AxelarExecutable(gatewayAddress) {
+    constructor(address gatewayAddress) AxelarExecutable(gatewayAddress) {
         require(gatewayAddress != address(0), "Invalid gateway");
     }
 
@@ -71,7 +68,10 @@ contract UniswapAlexarMessageReceiver is AxelarExecutable {
     ) internal override {
         _validateSource(commandId, sourceChain_, sourceAddress_);
 
-        GovernancePayload memory message = abi.decode(payload, (GovernancePayload));
+        GovernancePayload memory message = abi.decode(
+            payload,
+            (GovernancePayload)
+        );
         _validatePayload(message);
 
         // Update state before performing external calls to guard against re-entrancy on proposalId.
@@ -80,7 +80,7 @@ contract UniswapAlexarMessageReceiver is AxelarExecutable {
 
         // Execute each governance action atomically; any failure reverts the whole batch.
         uint256 length = message.targets.length;
-        for (uint256 i = 0; i < length;) {
+        for (uint256 i = 0; i < length; ) {
             address target = message.targets[i];
             uint256 value = message.values[i];
             bytes memory callData = message.calldatas[i];
@@ -88,9 +88,17 @@ contract UniswapAlexarMessageReceiver is AxelarExecutable {
             // Axelar GMP delivers no native value. Enforce zero to prevent misconfiguration.
             if (value != 0) revert("Non-zero value unsupported");
 
-            (bool success, bytes memory returnData) = target.call{value: value}(callData);
+            (bool success, bytes memory returnData) = target.call{value: value}(
+                callData
+            );
             if (!success) {
-                emit GovernanceActionFailed(commandId, message.proposalId, target, callData, returnData);
+                emit GovernanceActionFailed(
+                    commandId,
+                    message.proposalId,
+                    target,
+                    callData,
+                    returnData
+                );
                 _revertWith(returnData);
             }
 
@@ -106,7 +114,7 @@ contract UniswapAlexarMessageReceiver is AxelarExecutable {
             sourceAddress_,
             message.targets
         );
-    }      
+    }
 
     /// @dev Confirms the message originates from the configured Axelar sender and is not replayed.
     function _validateSource(
@@ -114,9 +122,14 @@ contract UniswapAlexarMessageReceiver is AxelarExecutable {
         string calldata sourceChain_,
         string calldata sourceAddress_
     ) private view {
-        require(keccak256(bytes(sourceChain_)) == keccak256(bytes(trustedSourceChain)), "Untrusted source chain");
         require(
-            keccak256(bytes(sourceAddress_)) == keccak256(bytes(trustedSourceAddress)),
+            keccak256(bytes(sourceChain_)) ==
+                keccak256(bytes(trustedSourceChain)),
+            "Untrusted source chain"
+        );
+        require(
+            keccak256(bytes(sourceAddress_)) ==
+                keccak256(bytes(trustedSourceAddress)),
             "Untrusted source address"
         );
         require(!processedCommands[commandId], "Command replay");
@@ -124,11 +137,15 @@ contract UniswapAlexarMessageReceiver is AxelarExecutable {
 
     /// @dev Checks payload metadata and array alignment.
     function _validatePayload(GovernancePayload memory message) private pure {
-        require(message.version == GOVERNANCE_PAYLOAD_VERSION, "Invalid payload version");
+        require(
+            message.version == GOVERNANCE_PAYLOAD_VERSION,
+            "Invalid payload version"
+        );
 
         uint256 targetsLength = message.targets.length;
         require(
-            targetsLength == message.values.length && targetsLength == message.calldatas.length,
+            targetsLength == message.values.length &&
+                targetsLength == message.calldatas.length,
             "Array length mismatch"
         );
     }
@@ -142,5 +159,5 @@ contract UniswapAlexarMessageReceiver is AxelarExecutable {
             }
         }
         revert("Governance call reverted");
-    }                 
+    }
 }
