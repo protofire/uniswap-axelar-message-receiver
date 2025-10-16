@@ -1,24 +1,20 @@
 import { ethers, network } from "hardhat";
-import type { UniswapAlexarSender } from "../typechain-types";
+import type { UniswapAxelarSender } from "../typechain-types";
 
 // Deployed contract addresses
 const CONTRACTS = {
   'kava-testnet': {
-    UniswapAlexarSender: "0x34695a2d2159602CB2696D45ed5269994eE897C6",
+    UniswapAxelarSender: "0x697d22a4f7c726Cc2721Cbb4318216E562490364",
   },
   'flow-testnet': {
-    UniswapAlexarReceiver: "0xA639F01DAd5A0d7c227b22B0a7AbD64F41eFf0Bb",
-    MockUniswapV3Factory: "0x110Ea7256aA4634Fe02A4358433372691c141242",
-  },
-  'base-sepolia': {
-    UniswapAlexarReceiver: "0xCeF7109625A6C360dF530149159491b87CC33C2d",
-    MockUniswapV3Factory: "0x2ceE2B4d550024374fCacBC1677088d550B96Fe7", // Replace with actual address if deployed
-  },
+    UniswapAxelarReceiver: "0x4B01ccD6159c0cADC8829188230C91EE03303573",
+    MockUniswapV3Factory: "0xA854AE6bFC969DF574ea990e1489A84CD55073ef",
+  }
 } as const;
 
 // Cross-chain parameters
 const DESTINATION_CHAIN = "flow";
-const DESTINATION_CONTRACT = CONTRACTS['flow-testnet'].UniswapAlexarReceiver;
+const DESTINATION_CONTRACT = CONTRACTS['flow-testnet'].UniswapAxelarReceiver;
 const TARGET_CONTRACT = CONTRACTS['flow-testnet'].MockUniswapV3Factory;
 
 // Fee parameters to enable (example: 1% fee with tick spacing of 200)
@@ -37,13 +33,13 @@ async function main() {
   console.log(`Network: ${network.name}`);
   console.log();
 
-  // Connect to UniswapAlexarSender on kava-testnet
-  const uniswapAlexarSender = (await ethers.getContractAt(
-    "UniswapAlexarSender",
-    CONTRACTS['kava-testnet'].UniswapAlexarSender
-  )) as UniswapAlexarSender;
+  // Connect to UniswapAxelarSender on kava-testnet
+  const uniswapAxelarSender = (await ethers.getContractAt(
+    "UniswapAxelarSender",
+    CONTRACTS['kava-testnet'].UniswapAxelarSender
+  )) as UniswapAxelarSender;
 
-  console.log(`Connected to UniswapAlexarSender at: ${await uniswapAlexarSender.getAddress()}`);
+  console.log(`Connected to UniswapAxelarSender at: ${await uniswapAxelarSender.getAddress()}`);
 
   // Prepare the call data for enableFeeAmount on MockUniswapV3Factory
   const mockFactoryInterface = new ethers.Interface([
@@ -81,7 +77,7 @@ async function main() {
     // Send the cross-chain proposal
     console.log("Sending cross-chain enableFeeAmount proposal...");
     
-    const tx = await uniswapAlexarSender.sendProposal(
+    const tx = await uniswapAxelarSender.sendProposal(
       DESTINATION_CHAIN,
       DESTINATION_CONTRACT,
       calls,

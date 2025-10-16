@@ -2,11 +2,11 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { keccak256 } from 'ethers';
 import { Signer } from 'ethers';
-import { UniswapAlexarSender__factory } from "../typechain-types";
+import { UniswapAxelarSender__factory } from "../typechain-types";
 
 const abiCoder = ethers.AbiCoder.defaultAbiCoder();
 
-describe('UniswapAlexarReceiver', function () {
+describe('UniswapAxelarReceiver', function () {
   // Constants for testing
   const SOURCE_CHAIN = 'ethereum';
   const SOURCE_ADDRESS = '0x' + '1'.repeat(40);
@@ -17,7 +17,7 @@ describe('UniswapAlexarReceiver', function () {
   let deployerAddress: string;
   let otherAddress: string;
   let gateway: any;
-  let uniswapAlexarReceiver: any;
+  let uniswapAxelarReceiver: any;
   let mockUniswapV3Factory: any;
 
   async function mockContracts() {
@@ -28,8 +28,8 @@ describe('UniswapAlexarReceiver', function () {
     otherAddress = await other.getAddress();
 
     const Gateway = await ethers.getContractFactory('MockAxelarGateway');
-    const UniswapAlexarReceiver = await ethers.getContractFactory(
-      'UniswapAlexarReceiver',
+    const UniswapAxelarReceiver = await ethers.getContractFactory(
+      'UniswapAxelarReceiver',
       deployer
     );
     const MockUniswapV3Factory = await ethers.getContractFactory(
@@ -39,12 +39,12 @@ describe('UniswapAlexarReceiver', function () {
 
     gateway = await Gateway.deploy();
     mockUniswapV3Factory = await MockUniswapV3Factory.deploy();
-    uniswapAlexarReceiver = await UniswapAlexarReceiver.deploy(
+    uniswapAxelarReceiver = await UniswapAxelarReceiver.deploy(
       await gateway.getAddress(),
       deployerAddress
     );
 
-    return { uniswapAlexarReceiver, mockUniswapV3Factory, gateway, deployer, other, deployerAddress, otherAddress };
+    return { uniswapAxelarReceiver, mockUniswapV3Factory, gateway, deployer, other, deployerAddress, otherAddress };
   }
 
   function encodePayload(
@@ -86,7 +86,7 @@ describe('UniswapAlexarReceiver', function () {
 
   async function setupWhitelists() {
     // Whitelist the source sender
-    await uniswapAlexarReceiver.setWhitelistedProposalSender(
+    await uniswapAxelarReceiver.setWhitelistedProposalSender(
       SOURCE_CHAIN,
       SOURCE_ADDRESS,
       true
@@ -94,14 +94,14 @@ describe('UniswapAlexarReceiver', function () {
 
     // Whitelist the deployer as caller
     const packedDeployer = ethers.solidityPacked(['address'], [deployerAddress]);
-    await uniswapAlexarReceiver.setWhitelistedProposalCaller(
+    await uniswapAxelarReceiver.setWhitelistedProposalCaller(
       SOURCE_CHAIN,
       packedDeployer,
       true
     );
 
-    // Transfer ownership of MockUniswapV3Factory to UniswapAlexarReceiver so it can call the functions
-    await mockUniswapV3Factory.setOwner(await uniswapAlexarReceiver.getAddress());
+    // Transfer ownership of MockUniswapV3Factory to UniswapAxelarReceiver so it can call the functions
+    await mockUniswapV3Factory.setOwner(await uniswapAxelarReceiver.getAddress());
   }
 
   beforeEach(async function () {
@@ -111,17 +111,17 @@ describe('UniswapAlexarReceiver', function () {
   describe('Whitelist Management', function () {
     it('should allow owner to set whitelisted proposal sender', async function () {
       await expect(
-        uniswapAlexarReceiver.setWhitelistedProposalSender(
+        uniswapAxelarReceiver.setWhitelistedProposalSender(
           SOURCE_CHAIN,
           SOURCE_ADDRESS,
           true
         )
       )
-        .to.emit(uniswapAlexarReceiver, 'WhitelistedProposalSenderSet')
+        .to.emit(uniswapAxelarReceiver, 'WhitelistedProposalSenderSet')
         .withArgs(SOURCE_CHAIN, SOURCE_ADDRESS, true);
 
       expect(
-        await uniswapAlexarReceiver.whitelistedSenders(SOURCE_CHAIN, SOURCE_ADDRESS)
+        await uniswapAxelarReceiver.whitelistedSenders(SOURCE_CHAIN, SOURCE_ADDRESS)
       ).to.be.true;
     });
 
@@ -129,40 +129,40 @@ describe('UniswapAlexarReceiver', function () {
       const packedCaller = ethers.solidityPacked(['address'], [deployerAddress]);
       
       await expect(
-        uniswapAlexarReceiver.setWhitelistedProposalCaller(
+        uniswapAxelarReceiver.setWhitelistedProposalCaller(
           SOURCE_CHAIN,
           packedCaller,
           true
         )
       )
-        .to.emit(uniswapAlexarReceiver, 'WhitelistedProposalCallerSet')
+        .to.emit(uniswapAxelarReceiver, 'WhitelistedProposalCallerSet')
         .withArgs(SOURCE_CHAIN, packedCaller, true);
 
       expect(
-        await uniswapAlexarReceiver.whitelistedCallers(SOURCE_CHAIN, packedCaller)
+        await uniswapAxelarReceiver.whitelistedCallers(SOURCE_CHAIN, packedCaller)
       ).to.be.true;
     });
 
     it('should not allow non-owner to set whitelisted proposal sender', async function () {
       await expect(
-        uniswapAlexarReceiver.connect(other).setWhitelistedProposalSender(
+        uniswapAxelarReceiver.connect(other).setWhitelistedProposalSender(
           SOURCE_CHAIN,
           SOURCE_ADDRESS,
           true
         )
-      ).to.be.revertedWithCustomError(uniswapAlexarReceiver, 'NotOwner');
+      ).to.be.revertedWithCustomError(uniswapAxelarReceiver, 'NotOwner');
     });
 
     it('should not allow non-owner to set whitelisted proposal caller', async function () {
       const packedCaller = ethers.solidityPacked(['address'], [deployerAddress]);
       
       await expect(
-        uniswapAlexarReceiver.connect(other).setWhitelistedProposalCaller(
+        uniswapAxelarReceiver.connect(other).setWhitelistedProposalCaller(
           SOURCE_CHAIN,
           packedCaller,
           true
         )
-      ).to.be.revertedWithCustomError(uniswapAlexarReceiver, 'NotOwner');
+      ).to.be.revertedWithCustomError(uniswapAxelarReceiver, 'NotOwner');
     });
   });
 
@@ -193,13 +193,13 @@ describe('UniswapAlexarReceiver', function () {
       // Execute the command
       await expect(
         gateway.execute(
-          uniswapAlexarReceiver,
+          uniswapAxelarReceiver,
           COMMAND_ID,
           SOURCE_CHAIN,
           SOURCE_ADDRESS,
           payload
         )
-      ).to.emit(uniswapAlexarReceiver, 'ProposalExecuted');
+      ).to.emit(uniswapAxelarReceiver, 'ProposalExecuted');
 
       // Verify the owner was changed
       expect(await mockUniswapV3Factory.owner()).to.equal(newOwnerAddress);
@@ -228,13 +228,13 @@ describe('UniswapAlexarReceiver', function () {
       // Execute the command
       await expect(
         gateway.execute(
-          uniswapAlexarReceiver,
+          uniswapAxelarReceiver,
           COMMAND_ID,
           SOURCE_CHAIN,
           SOURCE_ADDRESS,
           payload
         )
-      ).to.emit(uniswapAlexarReceiver, 'ProposalExecuted');
+      ).to.emit(uniswapAxelarReceiver, 'ProposalExecuted');
 
       // Verify the fee amount was enabled
       expect(await mockUniswapV3Factory.feeAmountTickSpacing(fee)).to.equal(tickSpacing);
@@ -277,13 +277,13 @@ describe('UniswapAlexarReceiver', function () {
       // Execute the command
       await expect(
         gateway.execute(
-          uniswapAlexarReceiver,
+          uniswapAxelarReceiver,
           COMMAND_ID,
           SOURCE_CHAIN,
           SOURCE_ADDRESS,
           payload
         )
-      ).to.emit(uniswapAlexarReceiver, 'ProposalExecuted');
+      ).to.emit(uniswapAxelarReceiver, 'ProposalExecuted');
 
       // Verify both operations were executed
       expect(await mockUniswapV3Factory.feeAmountTickSpacing(fee1)).to.equal(tickSpacing1);
@@ -313,13 +313,13 @@ describe('UniswapAlexarReceiver', function () {
       // Execute should revert
       await expect(
         gateway.execute(
-          uniswapAlexarReceiver,
+          uniswapAxelarReceiver,
           COMMAND_ID,
           SOURCE_CHAIN,
           unauthorizedSender,
           payload
         )
-      ).to.be.revertedWithCustomError(uniswapAlexarReceiver, 'NotWhitelistedSourceAddress');
+      ).to.be.revertedWithCustomError(uniswapAxelarReceiver, 'NotWhitelistedSourceAddress');
     });
 
     it('should revert when caller is not whitelisted', async function () {
@@ -339,13 +339,13 @@ describe('UniswapAlexarReceiver', function () {
       // Execute should revert
       await expect(
         gateway.execute(
-          uniswapAlexarReceiver,
+          uniswapAxelarReceiver,
           COMMAND_ID,
           SOURCE_CHAIN,
           SOURCE_ADDRESS,
           payload
         )
-      ).to.be.revertedWithCustomError(uniswapAlexarReceiver, 'NotWhitelistedCaller');
+      ).to.be.revertedWithCustomError(uniswapAxelarReceiver, 'NotWhitelistedCaller');
     });
 
     it('should revert on command replay', async function () {
@@ -370,7 +370,7 @@ describe('UniswapAlexarReceiver', function () {
 
       // Execute the command first time
       await gateway.execute(
-        uniswapAlexarReceiver,
+        uniswapAxelarReceiver,
         COMMAND_ID,
         SOURCE_CHAIN,
         SOURCE_ADDRESS,
@@ -378,7 +378,7 @@ describe('UniswapAlexarReceiver', function () {
       );
 
       // Verify the command was processed
-      expect(await uniswapAlexarReceiver.processedCommands(COMMAND_ID)).to.be.true;
+      expect(await uniswapAxelarReceiver.processedCommands(COMMAND_ID)).to.be.true;
 
       // Approve the same command ID again (simulating gateway allowing it somehow)
       await approve(gateway, COMMAND_ID, SOURCE_CHAIN, SOURCE_ADDRESS, payload);
@@ -386,7 +386,7 @@ describe('UniswapAlexarReceiver', function () {
       // Try to execute the same command again should revert due to replay protection
       await expect(
         gateway.execute(
-          uniswapAlexarReceiver,
+          uniswapAxelarReceiver,
           COMMAND_ID,
           SOURCE_CHAIN,
           SOURCE_ADDRESS,
@@ -419,7 +419,7 @@ describe('UniswapAlexarReceiver', function () {
       // Execute should revert
       await expect(
         gateway.execute(
-          uniswapAlexarReceiver,
+          uniswapAxelarReceiver,
           COMMAND_ID,
           SOURCE_CHAIN,
           SOURCE_ADDRESS,
@@ -446,7 +446,7 @@ describe('UniswapAlexarReceiver', function () {
       const commandId = ethers.id('test-command-owner-change');
       await approve(gateway, commandId, SOURCE_CHAIN, SOURCE_ADDRESS, payload);
       
-      await gateway.execute(uniswapAlexarReceiver, commandId, SOURCE_CHAIN, SOURCE_ADDRESS, payload);
+      await gateway.execute(uniswapAxelarReceiver, commandId, SOURCE_CHAIN, SOURCE_ADDRESS, payload);
 
       // Verify the owner was changed
       expect(await mockUniswapV3Factory.owner()).to.equal(newOwnerAddress);
@@ -469,7 +469,7 @@ describe('UniswapAlexarReceiver', function () {
 
       // This should fail because the receiver is no longer the owner
       await expect(
-        gateway.execute(uniswapAlexarReceiver, commandId2, SOURCE_CHAIN, SOURCE_ADDRESS, payload2)
+        gateway.execute(uniswapAxelarReceiver, commandId2, SOURCE_CHAIN, SOURCE_ADDRESS, payload2)
       ).to.be.reverted;
     });
   });
@@ -508,44 +508,44 @@ describe('UniswapAlexarReceiver', function () {
       // Execute and check event
       await expect(
         gateway.execute(
-          uniswapAlexarReceiver,
+          uniswapAxelarReceiver,
           COMMAND_ID,
           SOURCE_CHAIN,
           SOURCE_ADDRESS,
           payload
         )
-      ).to.emit(uniswapAlexarReceiver, 'ProposalExecuted')
+      ).to.emit(uniswapAxelarReceiver, 'ProposalExecuted')
         .withArgs(expectedPayloadHash);
     });
   });
 
   describe('Contract Initialization', function () {
     it('should initialize with correct gateway and owner', async function () {
-      expect(await uniswapAlexarReceiver.gateway()).to.equal(await gateway.getAddress());
-      expect(await uniswapAlexarReceiver.owner()).to.equal(deployerAddress);
+      expect(await uniswapAxelarReceiver.gateway()).to.equal(await gateway.getAddress());
+      expect(await uniswapAxelarReceiver.owner()).to.equal(deployerAddress);
     });
 
     it('should revert deployment with zero gateway address', async function () {
-      const UniswapAlexarReceiver = await ethers.getContractFactory('UniswapAlexarReceiver');
+      const UniswapAxelarReceiver = await ethers.getContractFactory('UniswapAxelarReceiver');
       
       // AxelarExecutable constructor checks for zero address first and throws InvalidAddress custom error
       await expect(
-        UniswapAlexarReceiver.deploy(ethers.ZeroAddress, deployerAddress)
-      ).to.be.revertedWithCustomError(UniswapAlexarReceiver, 'InvalidAddress');
+        UniswapAxelarReceiver.deploy(ethers.ZeroAddress, deployerAddress)
+      ).to.be.revertedWithCustomError(UniswapAxelarReceiver, 'InvalidAddress');
     });
   });
 
   describe('Receive Function', function () {
     it('should accept native token transfers', async function () {
       const amount = ethers.parseEther('1');
-      const receiverAddress = await uniswapAlexarReceiver.getAddress();
+      const receiverAddress = await uniswapAxelarReceiver.getAddress();
       
       await expect(() =>
         deployer.sendTransaction({
           to: receiverAddress,
           value: amount
         })
-      ).to.changeEtherBalance(uniswapAlexarReceiver, amount);
+      ).to.changeEtherBalance(uniswapAxelarReceiver, amount);
     });
   });
 });

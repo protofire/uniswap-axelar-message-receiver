@@ -4,10 +4,10 @@ pragma solidity ^0.8.0;
 
 import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
-import { IUniswapAlexarSender } from './interfaces/IUniswapAlexarSender.sol';
+import { IUniswapAxelarSender } from './interfaces/IUniswapAxelarSender.sol';
 import { UniswapCalls } from './lib/UniswapCalls.sol';
 
-contract UniswapAlexarSender is IUniswapAlexarSender {
+contract UniswapAxelarSender is IUniswapAxelarSender {
     IAxelarGateway public immutable gateway;
     IAxelarGasService public immutable gasService;
 

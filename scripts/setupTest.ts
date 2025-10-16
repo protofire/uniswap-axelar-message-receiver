@@ -1,14 +1,14 @@
 import { ethers, network } from "hardhat";
-import type { UniswapAlexarReceiver } from "../typechain-types";
+import type { UniswapAxelarReceiver } from "../typechain-types";
 
 // Deployed contract addresses
-const UNISWAP_ALEXAR_RECEIVER = "0xA639F01DAd5A0d7c227b22B0a7AbD64F41eFf0Bb";
-const UNISWAP_ALEXAR_SENDER = "0x34695a2d2159602CB2696D45ed5269994eE897C6";
-const MOCK_UNISWAP_V3_FACTORY = "0x110Ea7256aA4634Fe02A4358433372691c141242";
+const UNISWAP_AXELAR_RECEIVER = "0x4B01ccD6159c0cADC8829188230C91EE03303573";
+const UNISWAP_AXELAR_SENDER = "0x697d22a4f7c726Cc2721Cbb4318216E562490364";
+const MOCK_UNISWAP_V3_FACTORY = "0xA854AE6bFC969DF574ea990e1489A84CD55073ef";
 
 // Cross-chain configuration
 const SOURCE_CHAIN = "kava";
-const SOURCE_SENDER = UNISWAP_ALEXAR_SENDER;
+const SOURCE_SENDER = UNISWAP_AXELAR_SENDER;
 
 async function main() {
   // Ensure we're running on flow-testnet
@@ -17,7 +17,7 @@ async function main() {
   }
 
   const [owner] = await ethers.getSigners();
-  console.log(`Setting up UniswapAlexarReceiver whitelist from: ${owner.address}`);
+  console.log(`Setting up UniswapAxelarReceiver whitelist from: ${owner.address}`);
   console.log(`Account balance: ${ethers.formatEther(await owner.provider!.getBalance(owner.address))} ETH`);
   console.log(`Network: ${network.name}`);
   console.log();
@@ -31,20 +31,20 @@ async function main() {
   console.log(`Connected to MockUniswapV3Factory at: ${await mockFactory.getAddress()}`);
 
   // Set the receiver as the owner for the mock factory
-  console.log(`Setting UniswapAlexarReceiver as owner of MockUniswapV3Factory...`);
-  const setOwnerTx = await mockFactory.setOwner(UNISWAP_ALEXAR_RECEIVER);
+  console.log(`Setting UniswapAxelarReceiver as owner of MockUniswapV3Factory...`);
+  const setOwnerTx = await mockFactory.setOwner(UNISWAP_AXELAR_RECEIVER);
   console.log(`Transaction sent: ${setOwnerTx.hash}`);
   await setOwnerTx.wait();
   console.log("✅ Receiver set as owner of MockUniswapV3Factory successfully");
   console.log();
 
-  // Connect to UniswapAlexarReceiver
+  // Connect to UniswapAxelarReceiver
   const receiver = (await ethers.getContractAt(
-    "UniswapAlexarReceiver",
-    UNISWAP_ALEXAR_RECEIVER
-  )) as UniswapAlexarReceiver;
+    "UniswapAxelarReceiver",
+    UNISWAP_AXELAR_RECEIVER
+  )) as UniswapAxelarReceiver;
 
-  console.log(`Connected to UniswapAlexarReceiver at: ${await receiver.getAddress()}`);
+  console.log(`Connected to UniswapAxelarReceiver at: ${await receiver.getAddress()}`);
 
   try {
     // Check current owner
@@ -100,7 +100,7 @@ async function main() {
     console.log("🎉 Setup completed successfully!");
     console.log();
     console.log("📋 Configuration Summary:");
-    console.log(`  • Receiver Contract: ${UNISWAP_ALEXAR_RECEIVER}`);
+    console.log(`  • Receiver Contract: ${UNISWAP_AXELAR_RECEIVER}`);
     console.log(`  • Whitelisted Sender: ${SOURCE_SENDER} on ${SOURCE_CHAIN}`);
     console.log(`  • Whitelisted Caller: ${callerAddress} on ${SOURCE_CHAIN}`);
     console.log();

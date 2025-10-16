@@ -46,15 +46,15 @@ async function main() {
   console.log(`Account balance: ${(await deployer.provider!.getBalance(deployer.address)).toString()}`);
   console.log(`Deploying to network: ${networkName}`);
 
-  console.log("Deploying UniswapAlexarSender with args:");
+  console.log("Deploying UniswapAxelarSender with args:");
   console.log(`  Gateway: ${config.gateway}`);
   console.log(`  Gas Service: ${config.gasService}`);
   
-  const UniswapAlexarSender: ContractFactory = await ethers.getContractFactory(
-    "UniswapAlexarSender"
+  const UniswapAxelarSender: ContractFactory = await ethers.getContractFactory(
+    "UniswapAxelarSender"
   );
 
-  const sender = await UniswapAlexarSender.deploy(
+  const sender = await UniswapAxelarSender.deploy(
     config.gateway,
     config.gasService
   );
@@ -62,12 +62,12 @@ async function main() {
   await sender.waitForDeployment();
   const senderAddress = await sender.getAddress();
 
-  console.log(`UniswapAlexarSender deployed to: ${senderAddress}`);
+  console.log(`UniswapAxelarSender deployed to: ${senderAddress}`);
 
   // Prepare deployment data
   const deploymentData = {
     contractAddress: senderAddress,
-    contractName: "UniswapAlexarSender",
+    contractName: "UniswapAxelarSender",
     constructorInputs: [config.gateway, config.gasService],
     constructorTypes: ["address", "address"],
     network: networkName,
@@ -78,7 +78,7 @@ async function main() {
     gasUsed: (await sender.deploymentTransaction()?.wait())?.gasUsed?.toString(),
     gasPrice: sender.deploymentTransaction()?.gasPrice?.toString(),
     chainId: (await deployer.provider!.getNetwork()).chainId.toString(),
-    abi: UniswapAlexarSender.interface.fragments.map(f => JSON.parse(f.format("json"))),
+    abi: UniswapAxelarSender.interface.fragments.map(f => JSON.parse(f.format("json"))),
   };
 
   // Write deployment data to JSON file
@@ -88,7 +88,7 @@ async function main() {
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
-  const outputFile = path.join(outputDir, `UniswapAlexarSender-${networkName}-${Date.now()}.json`);
+  const outputFile = path.join(outputDir, `UniswapAxelarSender-${networkName}-${Date.now()}.json`);
   fs.writeFileSync(outputFile, JSON.stringify(deploymentData, null, 2));
 
   console.log(`Deployment data saved to: ${outputFile}`);

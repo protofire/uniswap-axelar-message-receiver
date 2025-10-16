@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-interface IUniswapAlexarReceiver {
+interface IUniswapAxelarReceiver {
     event WhitelistedProposalCallerSet(string indexed sourceChain, bytes indexed sourceCaller, bool whitelisted);
 
     event WhitelistedProposalSenderSet(string indexed sourceChain, string sourceSender, bool whitelisted);

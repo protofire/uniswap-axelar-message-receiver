@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 
 import { UniswapCalls } from '../lib/UniswapCalls.sol';
 
-interface IUniswapAlexarSender {
+interface IUniswapAxelarSender {
     error InvalidFee();
 
     error InvalidAddress();

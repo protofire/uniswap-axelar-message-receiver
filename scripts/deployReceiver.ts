@@ -45,15 +45,15 @@ async function main() {
   console.log(`Account balance: ${(await deployer.provider!.getBalance(deployer.address)).toString()}`);
   console.log(`Deploying to network: ${networkName}`);
 
-  console.log("Deploying UniswapAlexarReceiver with args:");
+  console.log("Deploying UniswapAxelarReceiver with args:");
   console.log(`  Gateway: ${config.gateway}`);
   console.log(`  Owner: ${deployer.address}`);
   
-  const UniswapAlexarReceiver: ContractFactory = await ethers.getContractFactory(
-    "UniswapAlexarReceiver"
+  const UniswapAxelarReceiver: ContractFactory = await ethers.getContractFactory(
+    "UniswapAxelarReceiver"
   );
 
-  const receiver = await UniswapAlexarReceiver.deploy(
+  const receiver = await UniswapAxelarReceiver.deploy(
     config.gateway,
     deployer.address
   );
@@ -61,12 +61,12 @@ async function main() {
   await receiver.waitForDeployment();
   const receiverAddress = await receiver.getAddress();
 
-  console.log(`UniswapAlexarReceiver deployed to: ${receiverAddress}`);
+  console.log(`UniswapAxelarReceiver deployed to: ${receiverAddress}`);
 
   // Prepare deployment data
   const deploymentData = {
     contractAddress: receiverAddress,
-    contractName: "UniswapAlexarReceiver",
+    contractName: "UniswapAxelarReceiver",
     constructorInputs: [config.gateway, deployer.address],
     constructorTypes: ["address", "address"],
     network: networkName,
@@ -77,7 +77,7 @@ async function main() {
     gasUsed: (await receiver.deploymentTransaction()?.wait())?.gasUsed?.toString(),
     gasPrice: receiver.deploymentTransaction()?.gasPrice?.toString(),
     chainId: (await deployer.provider!.getNetwork()).chainId.toString(),
-    abi: UniswapAlexarReceiver.interface.fragments.map(f => f.format("json")).map(json => JSON.parse(json)),
+    abi: UniswapAxelarReceiver.interface.fragments.map(f => f.format("json")).map(json => JSON.parse(json)),
   };
 
   // Write deployment data to JSON file
@@ -87,7 +87,7 @@ async function main() {
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
-  const outputFile = path.join(outputDir, `UniswapAlexarReceiver-${networkName}-${Date.now()}.json`);
+  const outputFile = path.join(outputDir, `UniswapAxelarReceiver-${networkName}-${Date.now()}.json`);
   fs.writeFileSync(outputFile, JSON.stringify(deploymentData, null, 2));
 
   console.log(`Deployment data saved to: ${outputFile}`);

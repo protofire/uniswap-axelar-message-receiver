@@ -6,11 +6,11 @@ import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/Ownable.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IGovernable.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IOwnable.sol";
-import "./interfaces/IUniswapAlexarReceiver.sol";
+import "./interfaces/IUniswapAxelarReceiver.sol";
 import "./lib/UniswapCalls.sol";
 
-contract UniswapAlexarReceiver is
-    IUniswapAlexarReceiver,
+contract UniswapAxelarReceiver is
+    IUniswapAxelarReceiver,
     AxelarExecutable,
     Ownable {
     mapping(bytes32 => bool) public processedCommands;

@@ -5,7 +5,7 @@ import { Signer } from 'ethers';
 
 const abiCoder = ethers.AbiCoder.defaultAbiCoder();
 
-describe('UniswapAlexarSender', function () {
+describe('UniswapAxelarSender', function () {
   // Constants for testing
   const DESTINATION_CHAIN = 'polygon';
   const DESTINATION_CONTRACT = '0x' + '2'.repeat(40);
@@ -18,7 +18,7 @@ describe('UniswapAlexarSender', function () {
   let otherAddress: string;
   let mockGateway: any;
   let mockGasService: any;
-  let uniswapAlexarSender: any;
+  let uniswapAxelarSender: any;
   let mockUniswapV3Factory: any;
 
   async function deployContracts() {
@@ -31,20 +31,20 @@ describe('UniswapAlexarSender', function () {
     // Deploy mock contracts
     const MockGateway = await ethers.getContractFactory('MockAxelarGateway');
     const MockGasService = await ethers.getContractFactory('MockAxelarGasService');
-    const UniswapAlexarSender = await ethers.getContractFactory('UniswapAlexarSender');
+    const UniswapAxelarSender = await ethers.getContractFactory('UniswapAxelarSender');
     const MockUniswapV3Factory = await ethers.getContractFactory('MockUniswapV3Factory');
 
     mockGateway = await MockGateway.deploy();
     mockGasService = await MockGasService.deploy();
     mockUniswapV3Factory = await MockUniswapV3Factory.deploy();
     
-    uniswapAlexarSender = await UniswapAlexarSender.deploy(
+    uniswapAxelarSender = await UniswapAxelarSender.deploy(
       await mockGateway.getAddress(),
       await mockGasService.getAddress()
     );
 
     return {
-      uniswapAlexarSender,
+      uniswapAxelarSender,
       mockGateway,
       mockGasService,
       mockUniswapV3Factory,
@@ -81,32 +81,32 @@ describe('UniswapAlexarSender', function () {
 
   describe('Contract Initialization', function () {
     it('should initialize with correct gateway and gas service', async function () {
-      expect(await uniswapAlexarSender.gateway()).to.equal(await mockGateway.getAddress());
-      expect(await uniswapAlexarSender.gasService()).to.equal(await mockGasService.getAddress());
+      expect(await uniswapAxelarSender.gateway()).to.equal(await mockGateway.getAddress());
+      expect(await uniswapAxelarSender.gasService()).to.equal(await mockGasService.getAddress());
     });
 
     it('should revert deployment with zero gateway address', async function () {
-      const UniswapAlexarSender = await ethers.getContractFactory('UniswapAlexarSender');
+      const UniswapAxelarSender = await ethers.getContractFactory('UniswapAxelarSender');
       
       await expect(
-        UniswapAlexarSender.deploy(ethers.ZeroAddress, await mockGasService.getAddress())
-      ).to.be.revertedWithCustomError(UniswapAlexarSender, 'InvalidAddress');
+        UniswapAxelarSender.deploy(ethers.ZeroAddress, await mockGasService.getAddress())
+      ).to.be.revertedWithCustomError(UniswapAxelarSender, 'InvalidAddress');
     });
 
     it('should revert deployment with zero gas service address', async function () {
-      const UniswapAlexarSender = await ethers.getContractFactory('UniswapAlexarSender');
+      const UniswapAxelarSender = await ethers.getContractFactory('UniswapAxelarSender');
       
       await expect(
-        UniswapAlexarSender.deploy(await mockGateway.getAddress(), ethers.ZeroAddress)
-      ).to.be.revertedWithCustomError(UniswapAlexarSender, 'InvalidAddress');
+        UniswapAxelarSender.deploy(await mockGateway.getAddress(), ethers.ZeroAddress)
+      ).to.be.revertedWithCustomError(UniswapAxelarSender, 'InvalidAddress');
     });
 
     it('should revert deployment with both zero addresses', async function () {
-      const UniswapAlexarSender = await ethers.getContractFactory('UniswapAlexarSender');
+      const UniswapAxelarSender = await ethers.getContractFactory('UniswapAxelarSender');
       
       await expect(
-        UniswapAlexarSender.deploy(ethers.ZeroAddress, ethers.ZeroAddress)
-      ).to.be.revertedWithCustomError(UniswapAlexarSender, 'InvalidAddress');
+        UniswapAxelarSender.deploy(ethers.ZeroAddress, ethers.ZeroAddress)
+      ).to.be.revertedWithCustomError(UniswapAxelarSender, 'InvalidAddress');
     });
   });
 
@@ -130,7 +130,7 @@ describe('UniswapAlexarSender', function () {
       );
 
       await expect(
-        uniswapAlexarSender.sendProposal(
+        uniswapAxelarSender.sendProposal(
           DESTINATION_CHAIN,
           DESTINATION_CONTRACT,
           calls,
@@ -138,7 +138,7 @@ describe('UniswapAlexarSender', function () {
         )
       ).to.emit(mockGasService, 'NativeGasPaidForContractCall')
         .withArgs(
-          await uniswapAlexarSender.getAddress(),
+          await uniswapAxelarSender.getAddress(),
           DESTINATION_CHAIN,
           DESTINATION_CONTRACT,
           expectedPayload,
@@ -147,7 +147,7 @@ describe('UniswapAlexarSender', function () {
         )
         .and.to.emit(mockGateway, 'ContractCall')
         .withArgs(
-          await uniswapAlexarSender.getAddress(),
+          await uniswapAxelarSender.getAddress(),
           DESTINATION_CHAIN,
           DESTINATION_CONTRACT,
           keccak256(expectedPayload),
@@ -167,7 +167,7 @@ describe('UniswapAlexarSender', function () {
       const gasAmount = ethers.parseEther('0.05');
 
       await expect(
-        uniswapAlexarSender.sendProposal(
+        uniswapAxelarSender.sendProposal(
           DESTINATION_CHAIN,
           DESTINATION_CONTRACT,
           calls,
@@ -197,7 +197,7 @@ describe('UniswapAlexarSender', function () {
       const gasAmount = ethers.parseEther('0.2');
 
       await expect(
-        uniswapAlexarSender.sendProposal(
+        uniswapAxelarSender.sendProposal(
           DESTINATION_CHAIN,
           DESTINATION_CONTRACT,
           calls,
@@ -224,7 +224,7 @@ describe('UniswapAlexarSender', function () {
 
       // Should only emit ContractCall, not gas payment
       await expect(
-        uniswapAlexarSender.sendProposal(
+        uniswapAxelarSender.sendProposal(
           DESTINATION_CHAIN,
           DESTINATION_CONTRACT,
           calls,
@@ -232,7 +232,7 @@ describe('UniswapAlexarSender', function () {
         )
       ).to.emit(mockGateway, 'ContractCall')
         .withArgs(
-          await uniswapAlexarSender.getAddress(),
+          await uniswapAxelarSender.getAddress(),
           DESTINATION_CHAIN,
           DESTINATION_CONTRACT,
           keccak256(expectedPayload),
@@ -250,7 +250,7 @@ describe('UniswapAlexarSender', function () {
       const calls = [createCall(targetContract, value, '0x')];
 
       await expect(
-        uniswapAlexarSender.sendProposal(
+        uniswapAxelarSender.sendProposal(
           DESTINATION_CHAIN,
           DESTINATION_CONTRACT,
           calls,
@@ -291,7 +291,7 @@ describe('UniswapAlexarSender', function () {
       ];
 
       await expect(
-        uniswapAlexarSender.sendProposals(UniswapCalls, { value: totalGas })
+        uniswapAxelarSender.sendProposals(UniswapCalls, { value: totalGas })
       ).to.not.be.reverted;
     });
 
@@ -325,7 +325,7 @@ describe('UniswapAlexarSender', function () {
       ];
 
       await expect(
-        uniswapAlexarSender.sendProposals(UniswapCalls, { value: totalGas })
+        uniswapAxelarSender.sendProposals(UniswapCalls, { value: totalGas })
       ).to.not.be.reverted;
     });
 
@@ -352,13 +352,13 @@ describe('UniswapAlexarSender', function () {
       ];
 
       await expect(
-        uniswapAlexarSender.sendProposals(UniswapCalls, { value: totalGas })
+        uniswapAxelarSender.sendProposals(UniswapCalls, { value: totalGas })
       ).to.not.be.reverted;
     });
 
     it('should handle empty proposals array', async function () {
       await expect(
-        uniswapAlexarSender.sendProposals([], { value: 0 })
+        uniswapAxelarSender.sendProposals([], { value: 0 })
       ).to.not.be.reverted;
     });
   });
@@ -379,8 +379,8 @@ describe('UniswapAlexarSender', function () {
       ];
 
       await expect(
-        uniswapAlexarSender.sendProposals(UniswapCalls, { value: incorrectFee })
-      ).to.be.revertedWithCustomError(uniswapAlexarSender, 'InvalidFee');
+        uniswapAxelarSender.sendProposals(UniswapCalls, { value: incorrectFee })
+      ).to.be.revertedWithCustomError(uniswapAxelarSender, 'InvalidFee');
     });
 
     it('should revert when total gas exceeds msg.value in sendProposals', async function () {
@@ -407,8 +407,8 @@ describe('UniswapAlexarSender', function () {
       ];
 
       await expect(
-        uniswapAlexarSender.sendProposals(UniswapCalls, { value: insufficientFee })
-      ).to.be.revertedWithCustomError(uniswapAlexarSender, 'InvalidFee');
+        uniswapAxelarSender.sendProposals(UniswapCalls, { value: insufficientFee })
+      ).to.be.revertedWithCustomError(uniswapAxelarSender, 'InvalidFee');
     });
 
     it('should revert when msg.value exceeds total gas in sendProposals', async function () {
@@ -426,8 +426,8 @@ describe('UniswapAlexarSender', function () {
       ];
 
       await expect(
-        uniswapAlexarSender.sendProposals(UniswapCalls, { value: excessiveFee })
-      ).to.be.revertedWithCustomError(uniswapAlexarSender, 'InvalidFee');
+        uniswapAxelarSender.sendProposals(UniswapCalls, { value: excessiveFee })
+      ).to.be.revertedWithCustomError(uniswapAxelarSender, 'InvalidFee');
     });
 
     it('should handle complex fee calculations correctly', async function () {
@@ -462,13 +462,13 @@ describe('UniswapAlexarSender', function () {
 
       // Should succeed with exact total
       await expect(
-        uniswapAlexarSender.sendProposals(UniswapCalls, { value: totalGas })
+        uniswapAxelarSender.sendProposals(UniswapCalls, { value: totalGas })
       ).to.not.be.reverted;
 
       // Should fail with off-by-one
       await expect(
-        uniswapAlexarSender.sendProposals(UniswapCalls, { value: totalGas - 1 })
-      ).to.be.revertedWithCustomError(uniswapAlexarSender, 'InvalidFee');
+        uniswapAxelarSender.sendProposals(UniswapCalls, { value: totalGas - 1 })
+      ).to.be.revertedWithCustomError(uniswapAxelarSender, 'InvalidFee');
     });
   });
 
@@ -487,7 +487,7 @@ describe('UniswapAlexarSender', function () {
       );
 
       await expect(
-        uniswapAlexarSender.sendProposal(
+        uniswapAxelarSender.sendProposal(
           DESTINATION_CHAIN,
           DESTINATION_CONTRACT,
           calls,
@@ -495,7 +495,7 @@ describe('UniswapAlexarSender', function () {
         )
       ).to.emit(mockGasService, 'NativeGasPaidForContractCall')
         .withArgs(
-          await uniswapAlexarSender.getAddress(),
+          await uniswapAxelarSender.getAddress(),
           DESTINATION_CHAIN,
           DESTINATION_CONTRACT,
           expectedPayload,
@@ -527,7 +527,7 @@ describe('UniswapAlexarSender', function () {
       ];
 
       // Should emit gas payment for both proposals
-      const tx = uniswapAlexarSender.sendProposals(UniswapCalls, { value: totalGas });
+      const tx = uniswapAxelarSender.sendProposals(UniswapCalls, { value: totalGas });
       
       await expect(tx).to.emit(mockGasService, 'NativeGasPaidForContractCall');
     });
@@ -537,7 +537,7 @@ describe('UniswapAlexarSender', function () {
       const calls = [createCall(await mockUniswapV3Factory.getAddress(), 0, callData)];
 
       await expect(
-        uniswapAlexarSender.sendProposal(
+        uniswapAxelarSender.sendProposal(
           DESTINATION_CHAIN,
           DESTINATION_CONTRACT,
           calls,
@@ -561,7 +561,7 @@ describe('UniswapAlexarSender', function () {
       );
 
       await expect(
-        uniswapAlexarSender.sendProposal(
+        uniswapAxelarSender.sendProposal(
           DESTINATION_CHAIN,
           DESTINATION_CONTRACT,
           calls,
@@ -569,7 +569,7 @@ describe('UniswapAlexarSender', function () {
         )
       ).to.emit(mockGateway, 'ContractCall')
         .withArgs(
-          await uniswapAlexarSender.getAddress(),
+          await uniswapAxelarSender.getAddress(),
           DESTINATION_CHAIN,
           DESTINATION_CONTRACT,
           keccak256(expectedPayload),
@@ -591,7 +591,7 @@ describe('UniswapAlexarSender', function () {
       );
 
       await expect(
-        uniswapAlexarSender.connect(other).sendProposal(
+        uniswapAxelarSender.connect(other).sendProposal(
           DESTINATION_CHAIN,
           DESTINATION_CONTRACT,
           calls,
@@ -599,7 +599,7 @@ describe('UniswapAlexarSender', function () {
         )
       ).to.emit(mockGateway, 'ContractCall')
         .withArgs(
-          await uniswapAlexarSender.getAddress(),
+          await uniswapAxelarSender.getAddress(),
           DESTINATION_CHAIN,
           DESTINATION_CONTRACT,
           keccak256(expectedPayload),

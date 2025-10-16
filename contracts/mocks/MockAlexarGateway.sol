@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../UniswapAlexarReceiver.sol";
+import "../UniswapAxelarReceiver.sol";
 
 contract MockAxelarGateway {
     mapping(bytes32 => bool) private approvals;
@@ -46,7 +46,7 @@ contract MockAxelarGateway {
     }
 
     function execute(
-        UniswapAlexarReceiver receiver,
+        UniswapAxelarReceiver receiver,
         bytes32 commandId,
         string calldata sourceChain,
         string calldata sourceAddress,
@@ -55,7 +55,7 @@ contract MockAxelarGateway {
         receiver.execute(commandId, sourceChain, sourceAddress, payload);
     }
 
-    // Add callContract function for UniswapAlexarSender
+    // Add callContract function for UniswapAxelarSender
     function callContract(
         string calldata destinationChain,
         string calldata destinationContract,

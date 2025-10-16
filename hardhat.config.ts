@@ -137,9 +137,6 @@ const config = {
       'blast-sepolia': "abc",
     },
   },
-  sourcify: {
-    enabled: true
-  },
   paths: {
     sources: "./contracts",
     tests: "./test",

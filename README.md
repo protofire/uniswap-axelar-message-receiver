@@ -1,6 +1,6 @@
 # Uniswap Axelar Governance Bridge Receiver
 
-This project provides a Hardhat-based environment for developing, testing, and deploying the `UniswapAlexarReceiver` contract. The receiver enforces strict authentication for cross-chain governance actions that originate from a trusted Uniswap Timelock and are routed through Axelar GMP.
+This project provides a Hardhat-based environment for developing, testing, and deploying the `UniswapAxelarReceiver` contract. The receiver enforces strict authentication for cross-chain governance actions that originate from a trusted Uniswap Timelock and are routed through Axelar GMP.
 
 Supporting files include `hardhat.config.ts`, `tsconfig.json`, `.env.example`, and `package.json` with all required dependencies.
 
@@ -52,10 +52,10 @@ npx hardhat run scripts/sendEnableFee.ts --network <source-network-name>
 
 ### Example Kava Testnet to Flow Testnet:
 
-UniswapAlexarSender on Kava Testnet: `0x34695a2d2159602CB2696D45ed5269994eE897C6`
+UniswapAxelarSender on Kava Testnet: `https://testnet.kavascan.com/address/0x697d22a4f7c726Cc2721Cbb4318216E562490364?t=code`
 
-UniswapAlexarReceiver on Flow Testnet: `0xA639F01DAd5A0d7c227b22B0a7AbD64F41eFf0Bb`
+UniswapAxelarReceiver on Flow Testnet: `https://evm-testnet.flowscan.io/address/0x4B01ccD6159c0cADC8829188230C91EE03303573?tab=contract`
 
-MockUniswapV3Factory on Flow Testnet: `0x110Ea7256aA4634Fe02A4358433372691c141242`
+MockUniswapV3Factory on Flow Testnet: `https://evm-testnet.flowscan.io/address/0xA854AE6bFC969DF574ea990e1489A84CD55073ef?tab=contract`
 
-Alexar transaction: `https://testnet.axelarscan.io/gmp/0xdf7e5f4bbf7dbc1cd3a4854c73b8bfd4446fc1c0620bf1363bfc6004a174934b`
+Axelar transaction: `https://testnet.axelarscan.io/gmp/0x7a19c94f9fba93233298cb995bec79e0cd504c58eade5aa1122345bccb3bd931`
