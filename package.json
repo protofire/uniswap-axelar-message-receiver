@@ -5,13 +5,14 @@
   "license": "MIT",
   "scripts": {
     "build": "hardhat compile",
-    "test": "hardhat test"
+    "test": "hardhat test",
+    "clean": "hardhat clean"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "dotenv": "^16.4.5",
+    "@types/mocha": "^10.0.7",
     "@types/node": "^20.12.7",
-  "@types/mocha": "^10.0.7",
+    "dotenv": "^16.4.5",
     "hardhat": "^2.22.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"

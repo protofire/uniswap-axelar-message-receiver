@@ -6,18 +6,19 @@ const path = require('path');
 const deploymentConfig = {
   flow: {
     gateway: "0xe432150cce91c13a887f7D836923d5597adD8E31",
+    gasService: "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
   },
   'optimism-sepolia': {
     gateway: "0xe432150cce91c13a887f7D836923d5597adD8E31",
+    gasService: "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
   },
   'base-sepolia': {
     gateway: "0xe432150cce91c13a887f7D836923d5597adD8E31",
+    gasService: "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
   },
   'kava-testnet': {
     gateway: "0xC8D18F85cB0Cee5C95eC29c69DeaF6cea972349c",
-  },
-  'flow-testnet': {
-    gateway: "0xe432150cce91c13a887f7D836923d5597adD8E31",
+    gasService: "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
   },
 } as const;
 
@@ -45,39 +46,39 @@ async function main() {
   console.log(`Account balance: ${(await deployer.provider!.getBalance(deployer.address)).toString()}`);
   console.log(`Deploying to network: ${networkName}`);
 
-  console.log("Deploying UniswapAlexarReceiver with args:");
+  console.log("Deploying UniswapAlexarSender with args:");
   console.log(`  Gateway: ${config.gateway}`);
-  console.log(`  Owner: ${deployer.address}`);
+  console.log(`  Gas Service: ${config.gasService}`);
   
-  const UniswapAlexarReceiver: ContractFactory = await ethers.getContractFactory(
-    "UniswapAlexarReceiver"
+  const UniswapAlexarSender: ContractFactory = await ethers.getContractFactory(
+    "UniswapAlexarSender"
   );
 
-  const receiver = await UniswapAlexarReceiver.deploy(
+  const sender = await UniswapAlexarSender.deploy(
     config.gateway,
-    deployer.address
+    config.gasService
   );
 
-  await receiver.waitForDeployment();
-  const receiverAddress = await receiver.getAddress();
+  await sender.waitForDeployment();
+  const senderAddress = await sender.getAddress();
 
-  console.log(`UniswapAlexarReceiver deployed to: ${receiverAddress}`);
+  console.log(`UniswapAlexarSender deployed to: ${senderAddress}`);
 
   // Prepare deployment data
   const deploymentData = {
-    contractAddress: receiverAddress,
-    contractName: "UniswapAlexarReceiver",
-    constructorInputs: [config.gateway, deployer.address],
+    contractAddress: senderAddress,
+    contractName: "UniswapAlexarSender",
+    constructorInputs: [config.gateway, config.gasService],
     constructorTypes: ["address", "address"],
     network: networkName,
     deployer: deployer.address,
-    deploymentTransaction: receiver.deploymentTransaction()?.hash,
-    blockNumber: (await receiver.deploymentTransaction()?.wait())?.blockNumber,
+    deploymentTransaction: sender.deploymentTransaction()?.hash,
+    blockNumber: (await sender.deploymentTransaction()?.wait())?.blockNumber,
     timestamp: new Date().toISOString(),
-    gasUsed: (await receiver.deploymentTransaction()?.wait())?.gasUsed?.toString(),
-    gasPrice: receiver.deploymentTransaction()?.gasPrice?.toString(),
+    gasUsed: (await sender.deploymentTransaction()?.wait())?.gasUsed?.toString(),
+    gasPrice: sender.deploymentTransaction()?.gasPrice?.toString(),
     chainId: (await deployer.provider!.getNetwork()).chainId.toString(),
-    abi: UniswapAlexarReceiver.interface.fragments.map(f => f.format("json")).map(json => JSON.parse(json)),
+    abi: UniswapAlexarSender.interface.fragments.map(f => JSON.parse(f.format("json"))),
   };
 
   // Write deployment data to JSON file
@@ -87,7 +88,7 @@ async function main() {
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
-  const outputFile = path.join(outputDir, `UniswapAlexarReceiver-${networkName}-${Date.now()}.json`);
+  const outputFile = path.join(outputDir, `UniswapAlexarSender-${networkName}-${Date.now()}.json`);
   fs.writeFileSync(outputFile, JSON.stringify(deploymentData, null, 2));
 
   console.log(`Deployment data saved to: ${outputFile}`);

@@ -5,7 +5,8 @@ cache/
 dist/
 typechain-types/
 .env
-.env.*
+.env.local
 coverage/
 coverage.json
 hardhat-network-accounts.json
+deployments/

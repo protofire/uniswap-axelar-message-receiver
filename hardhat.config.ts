@@ -5,6 +5,7 @@ import "dotenv/config";
 
 const privateKey = process.env.PRIVATE_KEY ?? "";
 const flowRpcUrl = process.env.FLOW_RPC_URL ?? "";
+const flowTestnetRpcUrl = process.env.FLOW_TESTNET_RPC_URL ?? "";
 const optimismSepoliaRpcUrl = process.env.OP_SEPOLIA_RPC_URL ?? "";
 const baseSepoliaRpcUrl = process.env.BASE_SEPOLIA_RPC_URL ?? "";
 const monadTestnetRpcUrl = process.env.MONAD_TESTNET_RPC_URL ?? "";
@@ -22,6 +23,14 @@ if (flowRpcUrl) {
     url: flowRpcUrl,
     accounts,
     chainId: 747,
+  };
+}
+
+if (flowTestnetRpcUrl) {
+  networks['flow-testnet'] = {
+    url: flowTestnetRpcUrl,
+    accounts,
+    chainId: 545,
   };
 }
 
@@ -67,12 +76,13 @@ if (kavaTestnetRpcUrl) {
 
 const config = {
   solidity: {
-    version: "0.8.21",
+    version: "0.8.19",
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200,
+        runs: 1000000,
       },
+      evmVersion: "london",
     },
   },
   networks,
@@ -84,6 +94,14 @@ const config = {
         urls: {
           apiURL: "https://evm.flowscan.io/api",
           browserURL: "https://evm.flowscan.io",
+        },
+      },
+      {
+        network: "flow-testnet",
+        chainId: 545,
+        urls: {
+          apiURL: "https://evm-testnet.flowscan.io/api",
+          browserURL: "https://evm-testnet.flowscan.io",
         },
       },
       {
@@ -102,11 +120,21 @@ const config = {
           browserURL: "https://testnet.kavascan.com",
         },
       },
+      {
+        network: "base-sepolia",
+        chainId: 84532,
+        urls: {
+          apiURL: "https://base-sepolia.blockscout.com/api",
+          browserURL: "https://base-sepolia.blockscout.com",
+        },
+      },
     ],
     apiKey: {
       flow: "abc",
+      'flow-testnet': "abc",
       'optimism-sepolia': "abc",
       'kava-testnet': "abc",
+      'blast-sepolia': "abc",
     },
   },
   sourcify: {
