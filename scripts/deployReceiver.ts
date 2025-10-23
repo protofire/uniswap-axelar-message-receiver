@@ -48,7 +48,7 @@ async function main() {
   console.log("Deploying UniswapAxelarReceiver with args:");
   console.log(`  Gateway: ${config.gateway}`);
   console.log(`  Owner: ${deployer.address}`);
-  
+
   const UniswapAxelarReceiver: ContractFactory = await ethers.getContractFactory(
     "UniswapAxelarReceiver"
   );

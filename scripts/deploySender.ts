@@ -20,6 +20,10 @@ const deploymentConfig = {
     gateway: "0xC8D18F85cB0Cee5C95eC29c69DeaF6cea972349c",
     gasService: "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
   },
+  polygon: {
+    gateway: "0x6f015F16De9fC8791b234eF68D486d2bF203FBA8",
+    gasService: "0x2d5d7d31F671F86C782533cc367F14109a082712"
+  }
 } as const;
 
 type SupportedNetwork = keyof typeof deploymentConfig;
@@ -49,7 +53,7 @@ async function main() {
   console.log("Deploying UniswapAxelarSender with args:");
   console.log(`  Gateway: ${config.gateway}`);
   console.log(`  Gas Service: ${config.gasService}`);
-  
+
   const UniswapAxelarSender: ContractFactory = await ethers.getContractFactory(
     "UniswapAxelarSender"
   );

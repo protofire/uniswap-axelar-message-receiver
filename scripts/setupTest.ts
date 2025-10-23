@@ -2,18 +2,18 @@ import { ethers, network } from "hardhat";
 import type { UniswapAxelarReceiver } from "../typechain-types";
 
 // Deployed contract addresses
-const UNISWAP_AXELAR_RECEIVER = "0x4B01ccD6159c0cADC8829188230C91EE03303573";
-const UNISWAP_AXELAR_SENDER = "0x697d22a4f7c726Cc2721Cbb4318216E562490364";
-const MOCK_UNISWAP_V3_FACTORY = "0xA854AE6bFC969DF574ea990e1489A84CD55073ef";
+const UNISWAP_AXELAR_RECEIVER = "0x453B933479d1Da1C678bDA8Ee99BeFcd5408C90e";
+const UNISWAP_AXELAR_SENDER = "0x5d442b349590a6048Eb2dC0eC346cAA5F47A9ab5";
+const MOCK_UNISWAP_V3_FACTORY = "0xe348A2F78abd66157156d590676021f2da3333C6";
 
 // Cross-chain configuration
-const SOURCE_CHAIN = "kava";
+const SOURCE_CHAIN = "Polygon"; // Mind the Capital P in "Polygon"
 const SOURCE_SENDER = UNISWAP_AXELAR_SENDER;
 
 async function main() {
-  // Ensure we're running on flow-testnet
-  if (network.name !== 'flow-testnet') {
-    throw new Error(`This script must be run on flow-testnet, but current network is: ${network.name}`);
+  // Ensure we're running on flow
+  if (network.name !== 'flow') {
+    throw new Error(`This script must be run on flow, but current network is: ${network.name}`);
   }
 
   const [owner] = await ethers.getSigners();
@@ -50,7 +50,7 @@ async function main() {
     // Check current owner
     const currentOwner = await receiver.owner();
     console.log(`Current owner: ${currentOwner}`);
-    
+
     if (currentOwner.toLowerCase() !== owner.address.toLowerCase()) {
       throw new Error(`You are not the owner of the receiver contract. Owner: ${currentOwner}, Your address: ${owner.address}`);
     }

@@ -3,28 +3,28 @@ import type { UniswapAxelarSender } from "../typechain-types";
 
 // Deployed contract addresses
 const CONTRACTS = {
-  'kava-testnet': {
-    UniswapAxelarSender: "0x697d22a4f7c726Cc2721Cbb4318216E562490364",
+  'polygon': {
+    UniswapAxelarSender: "0x5d442b349590a6048Eb2dC0eC346cAA5F47A9ab5",
   },
-  'flow-testnet': {
-    UniswapAxelarReceiver: "0x4B01ccD6159c0cADC8829188230C91EE03303573",
-    MockUniswapV3Factory: "0xA854AE6bFC969DF574ea990e1489A84CD55073ef",
+  'flow': {
+    UniswapAxelarReceiver: "0x453B933479d1Da1C678bDA8Ee99BeFcd5408C90e",
+    MockUniswapV3Factory: "0xe348A2F78abd66157156d590676021f2da3333C6",
   }
 } as const;
 
 // Cross-chain parameters
 const DESTINATION_CHAIN = "flow";
-const DESTINATION_CONTRACT = CONTRACTS['flow-testnet'].UniswapAxelarReceiver;
-const TARGET_CONTRACT = CONTRACTS['flow-testnet'].MockUniswapV3Factory;
+const DESTINATION_CONTRACT = CONTRACTS['flow'].UniswapAxelarReceiver;
+const TARGET_CONTRACT = CONTRACTS['flow'].MockUniswapV3Factory;
 
 // Fee parameters to enable (example: 1% fee with tick spacing of 200)
 const NEW_FEE = 505; // 1% = 10000 (in basis points, where 100% = 1000000)
 const TICK_SPACING = 10;
 
 async function main() {
-  // Ensure we're running on kava-testnet
-  if (network.name !== 'kava-testnet') {
-    throw new Error(`This script must be run on kava-testnet, but current network is: ${network.name}`);
+  // Ensure we're running on Polygon
+  if (network.name !== 'polygon') {
+    throw new Error(`This script must be run on polygon, but current network is: ${network.name}`);
   }
 
   const [sender] = await ethers.getSigners();
@@ -36,7 +36,7 @@ async function main() {
   // Connect to UniswapAxelarSender on kava-testnet
   const uniswapAxelarSender = (await ethers.getContractAt(
     "UniswapAxelarSender",
-    CONTRACTS['kava-testnet'].UniswapAxelarSender
+    CONTRACTS['polygon'].UniswapAxelarSender
   )) as UniswapAxelarSender;
 
   console.log(`Connected to UniswapAxelarSender at: ${await uniswapAxelarSender.getAddress()}`);
@@ -76,7 +76,7 @@ async function main() {
   try {
     // Send the cross-chain proposal
     console.log("Sending cross-chain enableFeeAmount proposal...");
-    
+
     const tx = await uniswapAxelarSender.sendProposal(
       DESTINATION_CHAIN,
       DESTINATION_CONTRACT,
@@ -108,7 +108,7 @@ async function main() {
     console.log("   You can monitor the transaction status on Axelar's explorer:");
     console.log(`   https://testnet.axelarscan.io/gmp/${tx.hash}`);
     console.log();
-    console.log("🔍 To verify the fee was enabled on flow-testnet, you can call:");
+    console.log("🔍 To verify the fee was enabled on flow, you can call:");
     console.log(`   MockUniswapV3Factory.feeAmountTickSpacing(${NEW_FEE})`);
     console.log(`   Expected result: ${TICK_SPACING}`);
 

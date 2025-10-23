@@ -11,6 +11,7 @@ const baseSepoliaRpcUrl = process.env.BASE_SEPOLIA_RPC_URL ?? "";
 const monadTestnetRpcUrl = process.env.MONAD_TESTNET_RPC_URL ?? "";
 const ethSepoliaRpcUrl = process.env.ETH_SEPOLIA_RPC_URL ?? "";
 const kavaTestnetRpcUrl = process.env.KAVA_TESTNET_RPC_URL ?? "";
+const polygonRpcUrl = process.env.POLYGON_RPC_URL ?? "";
 
 const accounts = privateKey !== "" ? [privateKey] : undefined;
 
@@ -71,6 +72,14 @@ if (kavaTestnetRpcUrl) {
     url: kavaTestnetRpcUrl,
     accounts,
     chainId: 2221,
+  };
+}
+
+if (polygonRpcUrl) {
+  networks['polygon'] = {
+    url: polygonRpcUrl,
+    accounts,
+    chainId: 137,
   };
 }
 
